@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+
+    <title>
+        {% block title %}
+        First page
+        {% endblock title %}
+    </title>
+</head>
+<body class="bg-gradient-to-br from-gray-50 via-white to-gray-100 min-h-screen text-gray-800"
+style="background-image: url('/media/background_image/bg.jpg');
+             background-repeat: repeat;
+             background-size:fill">
+  
+
+{% block navbar %}
+<nav class="bg-green-400 shadow-md sticky top-0 z-50 border-b border-gray-200 bg-opacity-80" >
+  <div class="max-w-7xl mx-auto px-6 ">
+    <div class="flex justify-between items-center h-16 ">
+
+      <!-- Left side: Brand + Nav links -->
+      <div class="flex items-center space-x-8 ">
+        <!-- Brand -->
+        <a class="text-2xl font-bold text-gray-700 hover:text-gray-900 transition" href="{% url 'product_list' %}">
+          E-Commerce
+        </a>
+
+        <!-- Navigation Links -->
+        <div class="flex items-center space-x-6">
+          <a href="{% url 'product_list' %}" class="px-4 py-2 text-white rounded-lg hover:bg-gray-500 transition">Home</a>
+          <a href="#" class="px-4 py-2 text-white hover:bg-gray-500 rounded-lg transition">Link</a>
+          <!-- Dropdown -->
+
+        <div class="relative" id="dropdown-container">
+          <!-- Button -->
+          <button onclick="toggleDropdown()" class=" px-4 py-2 ml-2 rounded-lg flex items-center text-white hover:bg-gray-500 transition">
+            Products
+            <svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <!-- Menu -->
+          <div id="dropdown-menu" class="absolute left-0 hidden bg-white rounded-lg shadow-lg mt-2 w-48 border border-gray-100 z-50">
+           <a class ="block px-4 py-2 hover:bg-gray-50 transition" href="{% url "add_product" %}">Add a Product</a>
+            <a class="block px-4 py-2 hover:bg-gray-50 transition" href="{% url "report" %}">Report a product</a>
+          </div>
+        </div>
+
+        
+
+
+
+
+          <a href="#" class="px-4 py-2 text-gray-400 cursor-not-allowed">Disabled</a>
+        </div>
+      </div>
+
+      <!-- Right side: Search + Auth Buttons -->
+      <div class="flex items-center space-x-3">
+        <form method="get" action="{% url 'search_product' %}" class="flex">
+          {% csrf_token %}
+          <input type="search" name="search" id="search"
+            class="px-3 py-2 rounded-l-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
+            placeholder="Search">
+          <button type="submit"
+            class="px-4 py-2 bg-gray-500 text-white rounded-r-lg hover:bg-gray-700 transition">Search</button>
+        </form>
+
+         <a href="{% url 'cart' %}" 
+     class="flex items-center px-4 py-2  text-white rounded-lg hover:bg-gray-500 transition">
+    <!-- Cart Icon (SVG) -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m13-9l2 9M10 21h4"/>
+    </svg>
+    Cart
+  </a>
+
+        {% if user.is_authenticated %}
+        <form action="{% url 'logout' %}" method="post">
+          {% csrf_token %}
+          <button type="submit"
+                  class="px-4 py-2  text-white rounded-lg hover:bg-gray-500 transition">
+            Logout
+          </button>
+        </form>
+        <div class="relative group">
+        <!-- Circle Avatar with First Letter -->
+        <button class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold">
+          {{ user.username|first|upper }}
+        </button>
+
+        <!-- Dropdown -->
+         <a href="{% url 'profile' %}"
+           class="absolute top-0 left-0 w-full h-full rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+            <div class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg hidden group-hover:block">
+              <div class="p-4 border-b">
+              <p class="font-semibold">{{ user.username }}</p>
+              <p class="text-sm text-gray-600">{{ user.email }}</p>
+            </div>
+          
+           </div>
+          </a>
+        
+        
+      </div>
+        {% else %}
+        <a href="{% url 'register' %}"
+           class="px-4 py-2  text-white rounded-lg hover:bg-gray-500 transition">
+          Register
+        </a>
+        <a href="{% url 'login' %}"
+           class="px-4 py-2  text-white rounded-lg hover:bg-gray-500 transition">
+          Login
+        </a>
+        
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+</nav>
+{% endblock navbar %}
+
+<!-- Header (only on product_list.html) -->
+{% if request.resolver_match.url_name == "product_list" %}
+<h1 id="welcome-message" 
+    class="text-3xl font-semibold text-center m-4  text-white opacity-100 transition-opacity duration-1000">
+    {% block header %}
+    Welcome Dear Customer, {{ user.username }}
+    {% endblock header %}
+</h1>
+<script>
+    setTimeout(() => {
+        document.getElementById('welcome-message').classList.add('opacity-0');
+    }, 3000); // fade out after 3 seconds
+</script>
+{% endif %}
+
+<!-- Content -->
+<div class="w-full h-full mx-auto mt-4 mb-4 bg-white p-6 rounded-xl shadow-lg border border-gray-100 bg-opacity-30">
+    {% block content %}
+    <p class="text-lg leading-relaxed text-gray-600">This is the content of the first page.</p>
+    {% endblock content %}
+</div>
+
+</body>
+</html>
